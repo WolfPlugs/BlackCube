@@ -6,27 +6,28 @@ const urlParams = ["images.unsplash.com", "i.imgur.com", "cdn.discordapp.com", "
 
 module.exports = {
 	data: new SlashCommandBuilder() // Actual command, referenced for use in other files
-		.setName('bg')
-		.setDescription('Request a Background')
+		.setName('gb')
+		.setDescription('Request a Badge')
         .addStringOption(option =>
             option.setName('link')
                 .setDescription('Your image link')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('position')
-                .setDescription('The position of your image')),
+            option.setName('name')
+                .setDescription('Name for your Badge')
+                .setRequired(true)),
+
 	async execute(interaction) { // Handle interaction from dispatch
         const { user } = interaction
 
-        const blacklisted = interaction.member.roles.cache.some(role => role.name === "BlackCube Blacklist"); // Checks if user has privelege to request
+        const blacklisted = interaction.member.roles.cache.some(role => role.name === "Black person"); // Checks if user has privelege to request
 	    if (blacklisted) return interaction.reply({ content: 'You are blacklisted from requesting', ephemeral: true });
 
         const link = interaction.options.getString('link');
-        const pos = interaction.options.getString('position');
+        const name = interaction.options.getString('name');
 
-        if (pos && pos.toLowerCase() !== "left" && pos.toLowerCase() !== "right") return interaction.reply({ content: 'Invalid position, must be either left or right', ephemeral: true });
 
-        var url
+        let url
 
         try { // Check validity of Url before use, also allows for easier parsing
             url = new URL(link)
@@ -42,11 +43,10 @@ module.exports = {
 
         const embed = new MessageEmbed()
             .setColor('#FFFFFF')
+            .setTitle(name)
             .setAuthor(user.id, user.avatarURL(true))
             .setThumbnail(url)
             .setDescription("Request created for " + userMention(user.id))
-
-        if (pos) embed.setTitle(`Position: ${pos}`)
 
         // Approve / Deny buttons
         const row = new MessageActionRow()
@@ -61,7 +61,7 @@ module.exports = {
                     .setStyle('DANGER'),
             );
 
-        const logChannel = interaction.guild.channels.cache.find(channel => channel.name === "userbg-log").id;
+        const logChannel = interaction.guild.channels.cache.find(channel => channel.name === "verifications").id;
         const channel = interaction.guild.channels.cache.get(logChannel);
 		await interaction.reply({ content: `Your background request has been created and can be viewed in <#${logChannel}>`, ephemeral: true })
         await channel.send({embeds: [embed], components: [row]});

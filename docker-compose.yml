@@ -9,4 +9,4 @@ services:
             - guildId=
             - clientId=
             - mongoIp=
-        image: p0rtl/blackcube
+        image: wolfkid200444/blackcube

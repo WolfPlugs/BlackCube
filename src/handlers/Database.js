@@ -1,32 +1,65 @@
-const MongoClient = require('mongodb').MongoClient
+const mongoose = require('mongoose')
 const uri = process.env.mongoIp
-const client = new MongoClient(uri)
-const connection = client.connect()
+
+const { User } = require('./models/index')
+
+const dbOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    autoIndex: false,
+    // poolSize: 5,
+    connectTimeoutMS: 10000,
+    family: 4,
+};
+function init()  {
+    mongoose.connect(uri, dbOptions)
+
+    mongoose.Promise = global.Promise;
+
+    mongoose.connection.on('connected', () => {
+        console.log('Mongoose has successfully connected!');
+    });
+
+    mongoose.connection.on('err', err => {
+        console.log(`Mongoose connection error: \n${err.stack}`);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+        console.log('Mongoose connection lost');
+    });
+
+
+}
+
+const mockData = {
+    userId: "123456789",
+    badge: "123456789",
+    name: "123456789",
+}
+
+const connection = init()
 
 const getConnection = () => connection
 const getClient = () => client
 
-connection.then((client) => {
-    client.db("usrbg").collection("usrbg").createIndex( {uid : 1} , {unique : true} )
-})
+
 
 async function create(dat) {
-    let res
-    const client = await connection
-    if (Array.isArray(dat)) res = await client.db("usrbg").collection("usrbg").insertMany(dat);
-    else res = await client.db("usrbg").collection("usrbg").updateMany({ uid: dat.uid }, { $set: dat }, { upsert: true });
-    return res.insertedCount;
+    const data = await User.findOne({ userId: dat.userId })
+    if (data) return data;
+    else return await new User(dat).save()
 }
 
-async function read(query, type = "uid") {
-    const client = await connection
-    const res = await client.db("usrbg").collection("usrbg").find(query ? { [type]: query } : {}).toArray();
-    return res.length > 1 ? res : res[0]
+async function read(query) {
+    const data = await User.findOne({ userId: query })
+    if (data) return data;
+    else return false;
+
 }
 
 async function del(query) {
-    const client = await connection
-    return (await client.db("usrbg").collection("usrbg").deleteOne({ uid: query })).deletedCount;
+    await User.findOneAndRemove({ userId: query })
+    return true
 }
 
 module.exports = { getConnection, getClient, create, read, del }

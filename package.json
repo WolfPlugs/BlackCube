@@ -1,10 +1,10 @@
 {
   "name": "blackcube",
   "version": "1.0.0",
-  "description": "UserBg bot",
+  "description": "Fork of UserBg bot",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/BlackCube.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +14,9 @@
     "cli-progress": "^3.9.0",
     "discord-api-types": "^0.22.0",
     "discord.js": "^13.1.0",
+    "dotenv": "^16.0.3",
     "mongodb": "^4.1.2",
+    "mongoose": "^7.0.1",
     "node-fetch": "^2.6.2",
     "pm2": "^5.1.1"
   }

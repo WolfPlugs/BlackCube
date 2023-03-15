@@ -1,21 +1,20 @@
 const path = require('path');
+require('dotenv').config()
 
-if (process.env.generate === true) {
+if (process.env.generate) {
 	const childProcess = require('child_process');
+	let building
+	let build = childProcess.fork(path.join(__dirname, ".", "utils", "build-commands.js")); // run build-css.js
 
-	var build = childProcess.fork(path.join(__dirname, "..", "utils", "build-commands.js")); // run build-css.js
-	
 	build.on('error', err => {
 		if (building) return;
 		building = true;
-		callback(err);
 	});
 	
 	build.on('exit', code => {
 		if (building) return;
 		building = true;
-		var err = code === 0 ? null : new Error('exit code ' + code);
-		callback(err);
+		let err = code === 0 ? null : new Error('exit code ' + code);
 	});
 }
 
@@ -29,7 +28,7 @@ const client = new Client({
 		status: 'online',
 		afk: false,
 		activities: [{
-			name: '/bg',
+			name: '/gb',
 			type: 'LISTENING',
 		}],
 	}
