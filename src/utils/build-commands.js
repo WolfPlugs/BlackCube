@@ -11,7 +11,7 @@ const commandFiles = fs.readdirSync(path.join(__dirname, "..", "commands")).filt
 // build json to send to Discord for authorization
 const commands = commandFiles.map((file) => {
 	const command = require(path.join(__dirname, "..", "commands", file));
-    return command.data.toJSON()
+	return command.data.toJSON()
 })
 
 // Write json to storage for use during bot runtime

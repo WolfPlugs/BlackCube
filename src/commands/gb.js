@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, userMention } = require('@discordjs/builders');
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const CRUD = require("../handlers/Database");
+
 const fetch = require('node-fetch');
 
 const urlParams = ["images.unsplash.com", "i.imgur.com", "cdn.discordapp.com", "media.discordapp.net"] // Whitelisted Urls
@@ -22,7 +24,8 @@ module.exports = {
 
         const blacklisted = interaction.member.roles.cache.some(role => role.name === "Black person"); // Checks if user has privelege to request
 	    if (blacklisted) return interaction.reply({ content: 'You are blacklisted from requesting', ephemeral: true });
-
+        
+        if (await CRUD.read(user.id)) return interaction.reply({ content: 'You already have a badge', ephemeral: true }); // Checks if user already has a badge
         const link = interaction.options.getString('link');
         const name = interaction.options.getString('name');
 
