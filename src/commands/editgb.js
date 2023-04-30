@@ -56,7 +56,7 @@ module.exports = {
 
         async function theModal(info) {
             const badge = badges.find(badge => badge.name === info.values[0])
-                const modal = new Modal()
+            const modal = new Modal()
                     .setCustomId('editModal')
                     .setTitle('Edit your badge');
                 const nameInput = new TextInputComponent()
@@ -68,8 +68,9 @@ module.exports = {
                 const badgeUrl = new TextInputComponent()
                     .setCustomId('badgeUrlInput')
                     .setLabel("What should the url of the badge be?")
-                    .setPlaceholder(badge.badge)
-                    .setValue(badge.badge)
+                    .setPlaceholder(badge.badge.length >= 100 ? "Choose a smaller url before u submit" : badge.badge)
+                    .setMaxLength(100)
+                    .setValue(badge.badge.length >= 100 ? "Choose a smaller url before u submit" : badge.badge)
                     .setStyle('PARAGRAPH');
                 const firstActionRow = new MessageActionRow().addComponents(nameInput);
                 const secondActionRow = new MessageActionRow().addComponents(badgeUrl);
