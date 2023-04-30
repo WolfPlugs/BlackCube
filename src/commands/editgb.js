@@ -63,6 +63,8 @@ module.exports = {
                     .setCustomId('nameInput')
                     .setLabel("What should the name of the badge be?")
                     .setPlaceholder(badge.name)
+                    .setMaxLength(30)
+                    .setMinLength(1)
                     .setValue(badge.name)
                     .setStyle('SHORT');
                 const badgeUrl = new TextInputComponent()
@@ -70,6 +72,7 @@ module.exports = {
                     .setLabel("What should the url of the badge be?")
                     .setPlaceholder(badge.badge.length >= 100 ? "Choose a smaller url before u submit" : badge.badge)
                     .setMaxLength(100)
+                    .setMinLength(10)
                     .setValue(badge.badge.length >= 100 ? "Choose a smaller url before u submit" : badge.badge)
                     .setStyle('PARAGRAPH');
                 const firstActionRow = new MessageActionRow().addComponents(nameInput);
