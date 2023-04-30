@@ -100,6 +100,11 @@ async function addBadge(query, oldBadgeName, newbadgeName, newbadgeUrl) {
         if (badge.name === oldBadgeName) {
             badge.name = newbadgeName
             badge.url = newbadgeUrl
+        } else {
+            badges.push({
+                name: newbadgeName,
+                badge: newbadgeUrl,
+            })
         }
     }
     userData.save()
