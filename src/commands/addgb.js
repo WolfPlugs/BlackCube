@@ -26,6 +26,7 @@ module.exports = {
 	    if (blacklisted) return interaction.reply({ content: 'You are blacklisted from requesting', ephemeral: true });
         
         if (badges.length >= 5) return interaction.reply({ content: 'You already have 5 badges, u cant request anymore', ephemeral: true }); // Checks if user has 5 badges
+        if (badges.some(badge => badge.name.toLowerCase() === interaction.options.getString('name').toLowerCase())) return interaction.reply({ content: 'You already have a badge with that name', ephemeral: true }); // Checks if user already has a badge with that name
         const link = interaction.options.getString('link');
         const name = interaction.options.getString('name');
 
