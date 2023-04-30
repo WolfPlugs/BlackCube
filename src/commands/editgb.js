@@ -39,12 +39,19 @@ module.exports = {
         const collector = message.createMessageComponentCollector({
             filter: (u) => {
                 return u.user.id === interaction.user.id;
-            }
+            },
+            time: 60000
         })
 
 
         collector.on('collect', async i => {
             await theModal(i)
+        })
+
+        collector.on('end', async i => {
+            if (i.size === 0) {
+                return interaction.editReply({ content: 'You did not edit your badge in time.', embeds: [], components: [], ephemeral: true });
+            }
         })
 
         async function theModal(info) {
