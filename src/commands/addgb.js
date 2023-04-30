@@ -8,7 +8,7 @@ const urlParams = ["images.unsplash.com", "i.imgur.com", "cdn.discordapp.com", "
 
 module.exports = {
 	data: new SlashCommandBuilder() // Actual command, referenced for use in other files
-		.setName('gb')
+		.setName('addgb')
 		.setDescription('Request a Badge')
         .addStringOption(option =>
             option.setName('link')
@@ -21,11 +21,11 @@ module.exports = {
 
 	async execute(interaction) { // Handle interaction from dispatch
         const { user } = interaction
-
+        const { badges } = await CRUD.read(user.id)
         const blacklisted = interaction.member.roles.cache.some(role => role.name === "Black person"); // Checks if user has privelege to request
 	    if (blacklisted) return interaction.reply({ content: 'You are blacklisted from requesting', ephemeral: true });
         
-        if (await CRUD.read(user.id)) return interaction.reply({ content: 'You already have a badge', ephemeral: true }); // Checks if user already has a badge
+        if (badges.length >= 5) return interaction.reply({ content: 'You already have 5 badges, u cant request anymore', ephemeral: true }); // Checks if user has 5 badges
         const link = interaction.options.getString('link');
         const name = interaction.options.getString('name');
 
@@ -66,7 +66,7 @@ module.exports = {
 
         const logChannel = interaction.guild.channels.cache.find(channel => channel.name === "verifications").id;
         const channel = interaction.guild.channels.cache.get(logChannel);
-		await interaction.reply({ content: `Your background request has been created and can be viewed in <#${logChannel}>`, ephemeral: true })
+		await interaction.reply({ content: `Your badge has been requested, please wait for a moderator to approve it on <#${logChannel}>`, ephemeral: true });
         await channel.send({embeds: [embed], components: [row]});
 	},
 };

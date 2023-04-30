@@ -11,7 +11,8 @@ const dbOptions = {
     connectTimeoutMS: 10000,
     family: 4,
 };
-function init()  {
+
+function init() {
     mongoose.connect(uri, dbOptions)
 
     mongoose.Promise = global.Promise;
@@ -33,8 +34,12 @@ function init()  {
 
 const mockData = {
     userId: "123456789",
-    badge: "123456789",
-    name: "123456789",
+    badge: "url",
+    name: "text",
+    badges: [{
+        name: "text",
+        badge: "url",
+    }],
 }
 
 const connection = init()
@@ -62,18 +67,57 @@ async function del(query) {
     return true
 }
 
-module.exports = { getConnection, getClient, create, read, del }
+async function delSingleGb(query, badgeName) {
+    // delete the badge from badges array
+    const userData = await User.findOne({ userId: query })
+    const badges = userData.badges
+    for (const badge of badges) {
+        if (badge.name === badgeName) {
+            badges.splice(badges.indexOf(badge), 1)
+        }
+    }
+    userData.save()
+    return true
+}
 
-if( require.main === module ) {
+async function migration() {
+    const data = await User.find({})
+    for (const user of data) {
+        user.badges.push({
+            name: user.name,
+            badge: user.badge,
+        })
+        user.save()
+    }
+}
+
+async function addBadge(query, oldBadgeName, newbadgeName, newbadgeUrl) {
+    // add the badge to badges array
+    const userData = await User.findOne({ userId: query })
+    const badges = userData.badges
+    // check if the badge already exists in the array and if it does replace it
+    for (const badge of badges) {
+        if (badge.name === oldBadgeName) {
+            badge.name = newbadgeName
+            badge.url = newbadgeUrl
+        }
+    }
+    userData.save()
+    return true
+}
+
+module.exports = { getConnection, getClient, create, read, del, delSingleGb, addBadge, migration }
+
+if (require.main === module) {
     switch (process.argv[2]) {
         case "--read": case "-r":
-            read(process.argv[3], process.argv[4]).then(res => {console.log(res); process.exit(1)});
+            read(process.argv[3], process.argv[4]).then(res => { console.log(res); process.exit(1) });
             break;
         case "--create": case "-c":
-            create(JSON.parse(process.argv[3])).then(res => {console.log(res); process.exit(1)});
+            create(JSON.parse(process.argv[3])).then(res => { console.log(res); process.exit(1) });
             break;
         case "--delete": case "--del": case "-d":
-            del(process.argv[3]).then(res => {console.log(res); process.exit(1)});
+            del(process.argv[3]).then(res => { console.log(res); process.exit(1) });
             break;
     }
 }
