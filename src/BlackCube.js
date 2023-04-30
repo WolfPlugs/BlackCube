@@ -7,13 +7,11 @@ if (process.env.generate) {
 	let build = childProcess.fork(path.join(__dirname, ".", "utils", "build-commands.js")); // run build-css.js
 
 	build.on('error', err => {
-		console.log('this got runned')
 		if (building) return;
 		building = true;
 	});
 	
 	build.on('exit', code => {
-		console.log('poop')
 		if (building) return;
 		building = true;
 		let err = code === 0 ? null : new Error('exit code ' + code);

@@ -110,7 +110,6 @@ async function modalSubmitInteraction(client, interaction) { // Handler for sele
             .setThumbnail(editedLink)
             .setDescription("Request created for " + userMention(user.id))
 
-		console.log()
 		await interaction.reply({ content: `Your badge has been edited, please wait for a moderator to approve it.`, ephemeral: true });
 		return await channel.send({ embeds: [editEmbed], components: [editRow] });
 
