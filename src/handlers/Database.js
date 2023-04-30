@@ -96,17 +96,17 @@ async function addBadge(query, oldBadgeName, newbadgeName, newbadgeUrl) {
     const userData = await User.findOne({ userId: query })
     const badges = userData.badges
     // check if the badge already exists in the array and if it does replace it
-    for (const badge of badges) {
+    badges.map(badge => {
         if (badge.name === oldBadgeName) {
             badge.name = newbadgeName
-            badge.url = newbadgeUrl
+            badge.badge = newbadgeUrl
         } else {
             badges.push({
                 name: newbadgeName,
                 badge: newbadgeUrl,
             })
         }
-    }
+    })
     userData.save()
     return true
 }
