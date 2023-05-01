@@ -21,14 +21,14 @@ const row = new MessageActionRow()
 		.setStyle('DANGER'),
 );
 
-function ButtonInteraction(interaction) { // Handler for button interactions, located below messages
+async function ButtonInteraction(interaction) { // Handler for button interactions, located below messages
 
 	const hasAuth = interaction.member.roles.cache.some(role => role.name === "The Capitalists"); // Checks if user has privelege to approve / deny requests (BlackCube Auth)
 	if (!hasAuth && interaction.customId !== "deny") return interaction.reply({ content: 'You do not have authorization to do this', ephemeral: true });
 	switch (interaction.customId) { // Check which button was clicked
 		case "approve":
 			if (!interaction.message.embeds[0]) return interaction.reply({ content: 'Badge has already been approved / denied', ephemeral: true }); // Checks if request has already been approved / denied
-			if (!CRUD.read(interaction.message.embeds[0].author.name)) CRUD.create({ userId: interaction.message.embeds[0].author.name, badges: [{ name: interaction.message.embeds[0].title, badge: interaction.message.embeds[0].thumbnail.url }], })
+			if (!await CRUD.read(interaction.message.embeds[0].author.name)) CRUD.create({ userId: interaction.message.embeds[0].author.name, badges: [{ name: interaction.message.embeds[0].title, badge: interaction.message.embeds[0].thumbnail.url }], })
 			CRUD.addBadge(interaction.message.embeds[0].author.name, oldData[0], interaction.message.embeds[0].title, interaction.message.embeds[0].thumbnail.url); // Adds badge to user
 			return interaction.update({ components: [], content: 'Badge request approved' });
 		case "deny":
