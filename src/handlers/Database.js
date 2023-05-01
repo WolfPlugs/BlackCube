@@ -72,7 +72,7 @@ async function delSingleGb(query, badgeName) {
     const userData = await User.findOne({ userId: query })
     const badges = userData.badges
     for (const badge of badges) {
-        if (badge.name === badgeName) {
+        if (badge.name.toLowerCase() === badgeName.toLowerCase()) {
             badges.splice(badges.indexOf(badge), 1)
         }
     }
@@ -91,27 +91,43 @@ async function migration() {
     }
 }
 
+async function deleteDuplicates() {
+    const data = await User.find({})
+    for (const user of data) {
+        const badges = user.badges
+        // check if the badge are duplicates indicated by the name and delete them only keeping the first one
+        for (const badge of badges) {
+            if (badges.filter(b => b.name.toLowerCase() === badge.name.toLowerCase()).length > 1) {
+                badges.splice(badges.indexOf(badge), 1)
+                console.log(`Deleted duplicate badge ${badge.name} from ${user.userId}`)
+            }
+        }
+        user.save()
+    }
+}
+
 async function addBadge(query, oldBadgeName, newbadgeName, newbadgeUrl) {
     // add the badge to badges array
     const userData = await User.findOne({ userId: query })
     const badges = userData.badges
-    // check if the badge already exists in the array and if it does replace it
-    badges.map(badge => {
-        if (badge.name === oldBadgeName) {
-            badge.name = newbadgeName
-            badge.badge = newbadgeUrl
-        } else {
-            badges.push({
-                name: newbadgeName,
-                badge: newbadgeUrl,
-            })
+    // check if the badge already exists in the array and if it does replace it with the new one, if it doesn't add it to the array and try using reduce
+    if(badges.some(badge => badge.name.toLowerCase() === oldBadgeName?.toLowerCase())) {
+        badges[badges.findIndex(badge => badge.name.toLowerCase() === oldBadgeName?.toLowerCase())] = {
+            name: newbadgeName,
+            badge: newbadgeUrl,
         }
-    })
+    } else {
+        badges.push({
+            name: newbadgeName,
+            badge: newbadgeUrl,
+        })
+    }
+
     userData.save()
     return true
 }
 
-module.exports = { getConnection, getClient, create, read, del, delSingleGb, addBadge, migration }
+module.exports = { getConnection, getClient, create, read, del, delSingleGb, addBadge, deleteDuplicates }
 
 if (require.main === module) {
     switch (process.argv[2]) {
