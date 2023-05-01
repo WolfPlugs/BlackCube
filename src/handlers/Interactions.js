@@ -10,16 +10,16 @@ const oldData = []; // Array to store old data for comparison
 
 
 const row = new MessageActionRow()
-.addComponents(
-	new MessageButton()
-		.setCustomId('dismiss')
-		.setLabel('Dismiss')
-		.setStyle('SECONDARY'),
-	new MessageButton()
-		.setCustomId('block')
-		.setLabel('Block')
-		.setStyle('DANGER'),
-);
+	.addComponents(
+		new MessageButton()
+			.setCustomId('dismiss')
+			.setLabel('Dismiss')
+			.setStyle('SECONDARY'),
+		new MessageButton()
+			.setCustomId('block')
+			.setLabel('Block')
+			.setStyle('DANGER'),
+	);
 
 async function ButtonInteraction(interaction) { // Handler for button interactions, located below messages
 
@@ -28,9 +28,14 @@ async function ButtonInteraction(interaction) { // Handler for button interactio
 	switch (interaction.customId) { // Check which button was clicked
 		case "approve":
 			if (!interaction.message.embeds[0]) return interaction.reply({ content: 'Badge has already been approved / denied', ephemeral: true }); // Checks if request has already been approved / denied
-			if (!await CRUD.read(interaction.message.embeds[0].author.name)) CRUD.create({ userId: interaction.message.embeds[0].author.name, badges: [{ name: interaction.message.embeds[0].title, badge: interaction.message.embeds[0].thumbnail.url }], })
-			CRUD.addBadge(interaction.message.embeds[0].author.name, oldData[0], interaction.message.embeds[0].title, interaction.message.embeds[0].thumbnail.url); // Adds badge to user
-			return interaction.update({ components: [], content: 'Badge request approved' });
+			if (!await CRUD.read(interaction.message.embeds[0].author.name)) {
+				CRUD.create({ userId: interaction.message.embeds[0].author.name, badges: [{ name: interaction.message.embeds[0].title, badge: interaction.message.embeds[0].thumbnail.url }], })
+				return interaction.update({ components: [], content: 'Badge request approved' });
+			} else {
+				CRUD.addBadge(interaction.message.embeds[0].author.name, oldData[0], interaction.message.embeds[0].title, interaction.message.embeds[0].thumbnail.url); // Adds badge to user
+				return interaction.update({ components: [], content: 'Badge request approved' });
+
+			}
 		case "deny":
 			if (!interaction.message.embeds[0]) return interaction.reply({ content: 'Badge has already been approved / denied', ephemeral: true }); // Checks if request has already been approved / denied
 			if (interaction.user.id !== interaction.message.embeds[0].author.name && !hasAuth) return interaction.reply({ content: 'You do not have authorization to do this', ephemeral: true });
@@ -45,7 +50,7 @@ async function ButtonInteraction(interaction) { // Handler for button interactio
 			return interaction.update({ components: [], content: 'Badge request denied' });
 		case 'success':
 			return;
-		case 'cancel' :
+		case 'cancel':
 			return;
 		default: // Runs if somehow a different buttonId was given
 			return interaction.reply({ content: 'Invalid button Id', ephemeral: true });
@@ -80,40 +85,40 @@ async function modalSubmitInteraction(client, interaction) { // Handler for sele
 			if (editedName.toLowerCase() === oldData[0].toLowerCase()) return interaction.reply({ content: 'Badge name is the same as another badge u have', ephemeral: true }); // Checks if badge name is the same as the old one
 			// Approve / Deny buttons
 			const editRow = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setCustomId('approve')
-                    .setLabel('Approve')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
-                    .setCustomId('deny')
-                    .setLabel('Deny')
-                    .setStyle('DANGER'),
-            );
+				.addComponents(
+					new MessageButton()
+						.setCustomId('approve')
+						.setLabel('Approve')
+						.setStyle('SUCCESS'),
+					new MessageButton()
+						.setCustomId('deny')
+						.setLabel('Deny')
+						.setStyle('DANGER'),
+				);
 
 			let url
 
-        try { // Check validity of Url before use, also allows for easier parsing
-            url = new URL(editedLink)
-        } catch {
-            return interaction.reply({ content: 'Link is invalid', ephemeral: true })
-        }
+			try { // Check validity of Url before use, also allows for easier parsing
+				url = new URL(editedLink)
+			} catch {
+				return interaction.reply({ content: 'Link is invalid', ephemeral: true })
+			}
 
-        if (urlParams.indexOf(url.host) === -1) return interaction.reply({ content: 'Link is not whitelisted', ephemeral: true }) // Check whitelist
+			if (urlParams.indexOf(url.host) === -1) return interaction.reply({ content: 'Link is not whitelisted', ephemeral: true }) // Check whitelist
 
-        // Fetch image url and check content type to ensure a valid image
-        const res = await fetch(url)
-        if (res.headers.get("content-type").split("/")[0] !== "image") return interaction.reply({ content: 'Link is not a valid image', ephemeral: true })
+			// Fetch image url and check content type to ensure a valid image
+			const res = await fetch(url)
+			if (res.headers.get("content-type").split("/")[0] !== "image") return interaction.reply({ content: 'Link is not a valid image', ephemeral: true })
 
-        const editEmbed = new MessageEmbed()
-            .setColor('#FFFFFF')
-            .setTitle(`${editedName}`)
-            .setAuthor(user.id, user.avatarURL(true))
-            .setThumbnail(editedLink)
-            .setDescription("Request created for " + userMention(user.id))
+			const editEmbed = new MessageEmbed()
+				.setColor('#FFFFFF')
+				.setTitle(`${editedName}`)
+				.setAuthor(user.id, user.avatarURL(true))
+				.setThumbnail(editedLink)
+				.setDescription("Request created for " + userMention(user.id))
 
-		await interaction.reply({ content: `Your badge has been edited, please wait for a moderator to approve it.`, ephemeral: true });
-		return await channel.send({ embeds: [editEmbed], components: [editRow] });
+			await interaction.reply({ content: `Your badge has been edited, please wait for a moderator to approve it.`, ephemeral: true });
+			return await channel.send({ embeds: [editEmbed], components: [editRow] });
 
 		default: // Runs if somehow a different select menu was clicked
 			return interaction.reply({ content: 'Invalid select menu Id', ephemeral: true });
@@ -122,17 +127,17 @@ async function modalSubmitInteraction(client, interaction) { // Handler for sele
 
 async function selectMenuInteraction(client, interaction) { // Handler for select menus
 	switch (interaction.customId) { // Check which select menu was clicked
-		case "editgb" : 
+		case "editgb":
 			oldData.push(interaction.values[0])
-		break;
+			break;
 
 	}
-}	
-	
+}
+
 
 module.exports = {
-    ButtonInteraction,
-    CommandInteraction,
+	ButtonInteraction,
+	CommandInteraction,
 	modalSubmitInteraction,
 	selectMenuInteraction
 }

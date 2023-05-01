@@ -110,7 +110,7 @@ async function addBadge(query, oldBadgeName, newbadgeName, newbadgeUrl) {
     // add the badge to badges array
     const userData = await User.findOne({ userId: query })
     const badges = userData.badges
-    // check if the badge already exists in the array and if it does replace it with the new one, if it doesn't add it to the array and try using reduce
+    // check if the badge already exists in the array and if it does replace it with the new one, if it doesn't add it to the array
     if(badges.some(badge => badge.name.toLowerCase() === oldBadgeName?.toLowerCase())) {
         badges[badges.findIndex(badge => badge.name.toLowerCase() === oldBadgeName?.toLowerCase())] = {
             name: newbadgeName,
