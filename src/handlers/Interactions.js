@@ -76,6 +76,8 @@ async function modalSubmitInteraction(client, interaction) { // Handler for sele
 			const editedName = interaction.fields.getTextInputValue('nameInput')
 			const channel = interaction.guild.channels.cache.get(logChannel);
 			const user = interaction.user
+
+			if (editedName.toLowerCase() === oldData[0].toLowerCase()) return interaction.reply({ content: 'Badge name is the same as another badge u have', ephemeral: true }); // Checks if badge name is the same as the old one
 			// Approve / Deny buttons
 			const editRow = new MessageActionRow()
             .addComponents(
