@@ -22,7 +22,7 @@ module.exports = {
 	async execute(interaction) { // Handle interaction from dispatch
         const { user } = interaction
         const { badges } = await CRUD.read(user.id)
-        const blacklisted = interaction.member.roles.cache.some(role => role.name === "Black person"); // Checks if user has privelege to request
+        const blacklisted = interaction.member.roles.cache.some(role => role.name === "Badge Blocked"); // Checks if user has privelege to request
 	    if (blacklisted) return interaction.reply({ content: 'You are blacklisted from requesting', ephemeral: true });
 
         if (badges && badges.length >= 5) return interaction.reply({ content: 'You already have 5 badges, u cant request anymore', ephemeral: true }); // Checks if user has 5 badges
