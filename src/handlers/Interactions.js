@@ -32,6 +32,8 @@ async function ButtonInteraction(interaction) { // Handler for button interactio
 				CRUD.create({ userId: interaction.message.embeds[0].author.name, badges: [{ name: interaction.message.embeds[0].title, badge: interaction.message.embeds[0].thumbnail.url }], })
 				return interaction.update({ components: [], content: 'Badge request approved' });
 			} else {
+				const { badges } = await CRUD.read(interaction.message.embeds[0].author.name)
+				if (badges.some(badge => badge.name.toLowerCase() === interaction.message.embeds[0].title.toLowerCase())) return interaction.reply({ content: 'User already has this badge', ephemeral: true }) // Checks if user already has this badge
 				CRUD.addBadge(interaction.message.embeds[0].author.name, oldData[0], interaction.message.embeds[0].title, interaction.message.embeds[0].thumbnail.url); // Adds badge to user
 				return interaction.update({ components: [], content: 'Badge request approved' });
 
