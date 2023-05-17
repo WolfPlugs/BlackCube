@@ -30,19 +30,19 @@ async function ButtonInteraction(interaction) { // Handler for button interactio
 			if (!interaction.message.embeds[0]) return interaction.reply({ content: 'Badge has already been approved / denied', ephemeral: true }); // Checks if request has already been approved / denied
 			if (!await CRUD.read(interaction.message.embeds[0].author.name)) {
 				CRUD.create({ userId: interaction.message.embeds[0].author.name, badges: [{ name: interaction.message.embeds[0].title, badge: interaction.message.embeds[0].thumbnail.url }], })
-				return interaction.update({ components: [], content: 'Badge request approved' });
+				return interaction.update({ components: [], content: `Badge request approved by ${interaction.user.tag}` });
 			} else {
 				const { badges } = await CRUD.read(interaction.message.embeds[0].author.name)
 				if (badges.some(badge => badge.name.toLowerCase() === interaction.message.embeds[0].title.toLowerCase())) return interaction.reply({ content: 'User already has this badge', ephemeral: true }) // Checks if user already has this badge
 				CRUD.addBadge(interaction.message.embeds[0].author.name, oldData[0], interaction.message.embeds[0].title, interaction.message.embeds[0].thumbnail.url); // Adds badge to user
-				return interaction.update({ components: [], content: 'Badge request approved' });
+				return interaction.update({ components: [], content: `Badge request approved by ${interaction.user.tag}` });
 
 			}
 		case "deny":
 			if (!interaction.message.embeds[0]) return interaction.reply({ content: 'Badge has already been approved / denied', ephemeral: true }); // Checks if request has already been approved / denied
 			if (interaction.user.id !== interaction.message.embeds[0].author.name && !hasAuth) return interaction.reply({ content: 'You do not have authorization to do this', ephemeral: true });
-			if (!hasAuth) return interaction.update({ components: [], content: 'Badge request denied' });
-			else return interaction.update({ components: [row], content: 'Badge request denied' });
+			if (!hasAuth) return interaction.update({ components: [], content: `Badge request denied by ${interaction.user.tag}` });
+			else return interaction.update({ components: [row], content: `Badge request denied by ${interaction.user.tag}` });
 		case "block":
 			interaction.guild.members.fetch(interaction.message.embeds[0].author.name).then(member => {
 				member.roles.add(interaction.guild.roles.cache.find(role => role.name == 'Badge Blocked')); // Adds blacklist role

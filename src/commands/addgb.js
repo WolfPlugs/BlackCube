@@ -25,7 +25,7 @@ module.exports = {
         const blacklisted = interaction.member.roles.cache.some(role => role.name === "Badge Blocked"); // Checks if user has privelege to request
 	    if (blacklisted) return interaction.reply({ content: 'You are blacklisted from requesting', ephemeral: true });
 
-        if (badges && badges.length >= 5) return interaction.reply({ content: 'You already have 5 badges, u cant request anymore', ephemeral: true }); // Checks if user has 5 badges
+        if (badges && badges.length >= 6) return interaction.reply({ content: 'You already have 5 badges, u cant request anymore', ephemeral: true }); // Checks if user has 5 badges
         if (badges && badges.some(badge => badge.name.toLowerCase() === interaction.options.getString('name').toLowerCase())) return interaction.reply({ content: 'You already have a badge with that name', ephemeral: true }); // Checks if user already has a badge with that name
         const link = interaction.options.getString('link');
         const name = interaction.options.getString('name');
