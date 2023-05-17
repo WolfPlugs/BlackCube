@@ -49,7 +49,7 @@ async function ButtonInteraction(interaction) { // Handler for button interactio
 			});
 			return interaction.update({ components: [], content: 'User blocked from further requests' });
 		case "dismiss":
-			return interaction.update({ components: [], content: 'Badge request denied' });
+			return interaction.update({ components: [] });
 		case 'success':
 			return;
 		case 'cancel':
