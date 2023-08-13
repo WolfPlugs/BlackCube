@@ -1,3 +1,5 @@
+# Deprecated in favor of https://github.com/WolfPlugs/GiBBy
+
 # BlackCube - USRBG handler bot v2
 ## Server Setup (case sensitive)
 ### Roles
